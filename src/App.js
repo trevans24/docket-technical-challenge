@@ -69,11 +69,7 @@ function App() {
     path(["target", "value"])
   )
 
-  const handleClick = (word) => {
-    const trimmed = trimWord(word)
-    setText(trimmed)
-    resetSuggestions()
-  }
+  const handleClick = compose(resetSuggestions, tap(setText), trimWord)
 
   const handleClear = () => {
     setText("")
