@@ -23,7 +23,6 @@ import {
   toLower,
   trim,
 } from "ramda"
-import shadows from "@mui/material/styles/shadows"
 import CancelIcon from "@mui/icons-material/Cancel"
 
 const wordSuggestions = {
@@ -126,7 +125,7 @@ function App() {
           sx={{
             backgroundColor: "#FAFAFA",
             borderRadius: 4,
-            boxShadow: shadows[5],
+            boxShadow: ({ shadows }) => shadows[5],
             padding: 2,
           }}
         >
