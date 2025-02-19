@@ -1,7 +1,11 @@
 import { useState } from "react"
 import "./App.css"
 import {
+  Box,
+  IconButton,
+  InputAdornment,
   List,
+  ListItem,
   ListItemButton,
   Stack,
   TextField,
@@ -16,8 +20,11 @@ import {
   path,
   prop,
   tap,
+  toLower,
   trim,
 } from "ramda"
+import shadows from "@mui/material/styles/shadows"
+import CancelIcon from "@mui/icons-material/Cancel"
 
 const wordSuggestions = {
   happy: ["joyful", "cheerful", "content"],
@@ -31,9 +38,10 @@ function App() {
   const [suggestions, setSuggestions] = useState([])
 
   // Quick shortcut functions
-  // trimWord > val -> trimFn
-  const trimWord = trim
+  // trimWord > val -> trimFn -> toLowercase
+  const trimWord = compose(toLower, trim)
   const resetSuggestions = () => setSuggestions([])
+  const hasSuggestionLength = gt(length(suggestions), 0)
 
   // Handle Suggestions
   // val: string
@@ -68,36 +76,75 @@ function App() {
     resetSuggestions()
   }
 
+  const handleClear = () => {
+    setText("")
+    resetSuggestions()
+  }
+
   return (
     <Stack
-      spacing={2}
       sx={{
         mx: "auto",
         my: 5,
         maxWidth: 500,
       }}
     >
-      <Typography>Character Count: {length(text)}</Typography>
-      <TextField
-        fullWidth
-        onChange={handleChange}
-        placeholder="Type Here"
-        value={text}
-      />
-      {gt(length(suggestions), 0) && (
-        <Stack>
-          <Typography>Suggestions:</Typography>
-          <List>
-            {suggestions.map((word, idx) => (
-              <ListItemButton
-                key={idx}
-                onClick={() => handleClick(word)}
-                sx={{ textTransform: "capitalize" }}
-              >
-                {word}
-              </ListItemButton>
-            ))}
-          </List>
+      <Stack spacing={2}>
+        <Typography>Character Count: {length(text)}</Typography>
+        <TextField
+          fullWidth
+          helperText={
+            hasSuggestionLength ? "" : "Try: Happy, Sad, Fast, or Slow"
+          }
+          onChange={handleChange}
+          placeholder="Type Here"
+          InputProps={{
+            sx: {
+              borderRadius: 4,
+            },
+          }}
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="Clear the input"
+                    onClick={handleClear}
+                    edge="end"
+                  >
+                    <CancelIcon />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
+          value={text}
+        />
+      </Stack>
+      {hasSuggestionLength && (
+        <Stack
+          sx={{
+            backgroundColor: "#FAFAFA",
+            borderRadius: 4,
+            boxShadow: shadows[5],
+            padding: 2,
+          }}
+        >
+          <Typography>Synonyms:</Typography>
+          <Box>
+            <List>
+              {suggestions.map((word, idx) => (
+                <ListItem disablePadding key={idx}>
+                  <ListItemButton
+                    onClick={() => handleClick(word)}
+                    sx={{ textTransform: "capitalize" }}
+                  >
+                    {word}
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
         </Stack>
       )}
     </Stack>
